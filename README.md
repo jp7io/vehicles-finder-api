@@ -1,7 +1,14 @@
 # vehicles-api
 A simple vehicles API using Mongoose/Express
 
-* Start: yarn start
-* Address: http://localhost:8080
-* Restore dump: mongorestore -d vehicles ./dump/vehicles
+* Install: 
+```
+cp .env.example .env # edit your settings
+yarn
+yarn start
+```
+* Restore dump: 
+```
+mongorestore -d vehicles ./dump/vehicles
+```
 

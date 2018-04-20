@@ -1,9 +1,10 @@
+require('dotenv').load();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const vehiclesController = require('./controllers/vehicles_controller');
 
-mongoose.connect('mongodb://localhost/vehicles');
+mongoose.connect(process.env.MONGODB_URI);
 
 const app = express();
 app.use(cors());
@@ -14,4 +15,4 @@ app.get('/vehicles/search', vehiclesController.search);
 
 app.get('/vehicles/filters', vehiclesController.filters);
 
-app.listen(8080, () => console.log('Vehicles API listening on port 8080!'));
+app.listen(process.env.APP_PORT, () => console.log(`Vehicles API listening on port ${process.env.APP_PORT}!`));
