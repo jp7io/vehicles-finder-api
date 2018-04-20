@@ -2,5 +2,5 @@
 A simple vehicles API using Mongoose/Express
 
 * Address: http://localhost:8080
-* Restore dump: mongorestore -d vehicles ./dump
+* Restore dump: mongorestore -d vehicles ./dump/vehicles
 
