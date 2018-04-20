@@ -19,7 +19,7 @@ const vehiclesController = {
     return getCriteria(req.query)
       .then(criteria => {
         const aggregates = [
-          facetAggregate(Make, 'make', except(criteria, ['make'])),
+          facetAggregate(Make, 'make', except(criteria, ['make', 'model'])),
           facetAggregate(Model, 'model', except(criteria, ['model'])),
           facetAggregate(Color, 'color', except(criteria, ['color'])),
         ];
