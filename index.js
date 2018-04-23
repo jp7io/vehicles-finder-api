@@ -15,4 +15,4 @@ app.get('/vehicles/search', vehiclesController.search);
 
 app.get('/vehicles/filters', vehiclesController.filters);
 
-app.listen(process.env.PORT || 3000, () => console.log(`Vehicles API listening on port ${process.env.APP_PORT}!`));
+app.listen(process.env.PORT || 3000, () => console.log(`Vehicles API listening on port ${process.env.PORT}!`));
