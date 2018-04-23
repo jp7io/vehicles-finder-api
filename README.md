@@ -1,4 +1,4 @@
-# vehicles-vehicles-api
+# vehicles-finder-api
 A simple vehicles API using Mongoose/Express
 
 * Install: 
