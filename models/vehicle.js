@@ -1,12 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const photoSchema = new mongoose.Schema({
-  url: String
-});
-
 const vehicleSchema = new Schema({
-  photos: [photoSchema],
+  photo: String,
   model: {
     type: Schema.Types.ObjectId,
     ref: 'model',
