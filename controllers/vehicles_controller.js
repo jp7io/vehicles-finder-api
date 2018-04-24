@@ -11,7 +11,7 @@ const vehiclesController = {
 
     return Vehicle.find(criteria)
       .limit(parseInt(req.query.limit) || 20) // only a draft for pagination
-      .populate(['make', 'model'])
+      .populate(['make', 'model', 'color'])
       .then(vehicles => res.send(vehicles))
       .catch(err => next(err));
   },
