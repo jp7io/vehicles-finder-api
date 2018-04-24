@@ -6,10 +6,6 @@ const colorSchema = new Schema({
     type: String,
     required: true,
     text: true
-  },
-  slug: {
-    type: String,
-    unique: true
   }
 });
 

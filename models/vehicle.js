@@ -7,10 +7,6 @@ const photoSchema = new mongoose.Schema({
 
 const vehicleSchema = new Schema({
   photos: [photoSchema],
-  version: {
-    type: Schema.Types.ObjectId,
-    ref: 'version',
-  },
   model: {
     type: Schema.Types.ObjectId,
     ref: 'model',

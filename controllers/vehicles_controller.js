@@ -1,74 +1,41 @@
+const mongoose = require('mongoose');
 const Vehicle = require('../models/vehicle');
 const Make = require('../models/make');
 const Model = require('../models/model');
 const Color = require('../models/color');
-const Version = require('../models/version');
+const _ = require('lodash');
 
 const vehiclesController = {
   search: (req, res, next) => {
-    return getCriteria(req.query)
-      .then(criteria => {
-        return Vehicle.find(criteria)
-          .limit(req.query.limit ? parseInt(req.query.limit) : 20) // proper pagination is not included
-          .populate(['make', 'model', 'version']);
-      })
+    const criteria = _.pick(req.query, ['make', 'model', 'color']);
+
+    return Vehicle.find(criteria)
+      .limit(parseInt(req.query.limit) || 20) // only a draft for pagination
+      .populate(['make', 'model'])
       .then(vehicles => res.send(vehicles))
       .catch(err => next(err));
   },
   filters: (req, res, next) => {
-    return getCriteria(req.query)
-      .then(criteria => {
-        const aggregates = [
-          facetAggregate(Make, 'make', except(criteria, ['make', 'model'])),
-          facetAggregate(Model, 'model', except(criteria, ['model'])),
-          facetAggregate(Color, 'color', except(criteria, ['color'])),
-        ];
-        return Promise.all(aggregates);
-      })
-      .then(([makes, models, colors]) => {
-        res.send({
-          makes,
-          models,
-          colors
-        });
-      })
-      .catch(err => next(err));
+    const criteria = _.pick(req.query, ['make', 'model', 'color']);
+    return Promise.all([
+      facetAggregate(Make, 'make', _.omit(criteria, ['make', 'model'])),
+      facetAggregate(Model, 'model', _.omit(criteria, ['model'])),
+      facetAggregate(Color, 'color', _.omit(criteria, ['color'])),
+    ])
+    .then(([makes, models, colors]) => { // array destructuring
+      res.send({ makes, models, colors });
+    })
+    .catch(err => next(err));
   }
 };
-
-async function getCriteria(query) {
-  const criteria = {};
-  // Convert Slugs to IDs
-  if (query.make) {
-    const make = await Make.findOne({ slug: query.make });
-    criteria.make = make ? make._id : undefined;
-  }
-  if (query.model) {
-    const model = await Model.findOne({ slug: query.model });
-    criteria.model = model ? model._id : undefined;
-  }
-  if (query.color) {
-    const color = await Color.findOne({ slug: query.color });
-    criteria.color = color ? color._id : undefined;
-  }
-  return criteria;
-}
-
-function except(obj, exceptProps) {
-  const clone = {...obj};
-  for (prop of exceptProps) {
-    delete clone[prop];
-  }
-  return clone;
-}
 
 function facetAggregate(model, foreignField, criteria) {
   const vehiclesCriteria = {};
   for (key in criteria) {
-    vehiclesCriteria['vehicles.'+key] = criteria[key];
+    vehiclesCriteria['vehicles.'+key] = mongoose.Types.ObjectId(criteria[key]);
   }
   return model.aggregate()
-    .lookup({
+    .lookup({ // similar to SQL JOIN
       from: 'vehicles',
       localField: '_id',
       foreignField: foreignField,
@@ -80,7 +47,7 @@ function facetAggregate(model, foreignField, criteria) {
       },
       ...vehiclesCriteria
     })
-    .project({
+    .project({ // select returning properties
       slug: 1,
       name: 1
     })
